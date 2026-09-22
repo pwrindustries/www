@@ -84,10 +84,26 @@
       color: inherit;
     }
 
+    .nav-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      padding: 6px;
+      background: linear-gradient(160deg, #f4f8ff 0%, #dce9ff 45%, #c5dbff 100%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgba(22, 58, 107, 0.12),
+        0 0 18px rgba(0, 240, 255, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
     .nav-brand img {
-      width: 48px;
-      height: 48px;
-      filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.45));
+      width: 40px;
+      height: 40px;
+      display: block;
+      filter: drop-shadow(0 1px 4px rgba(22, 58, 107, 0.25));
     }
 
     .nav-brand-text {
@@ -496,7 +512,7 @@
   <div class="shell">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="#">
-        <img src="logo.svg" alt="PWR Industries" width="48" height="48" />
+        <span class="nav-brand-mark" aria-hidden="false"><img src="logo.svg" alt="PWR Industries" width="40" height="40" /></span>
         <div class="nav-brand-text">
           PWR Industries
           <small>pwr.industries</small>
