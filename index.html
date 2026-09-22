@@ -272,13 +272,27 @@
       font-size: 0.6rem;
     }
 
+    .logo-hero-wrap {
+      width: fit-content;
+      max-width: 100%;
+      margin: 1.25rem auto 0.85rem;
+      padding: 1.1rem 1.25rem;
+      background: linear-gradient(160deg, #f4f8ff 0%, #dce9ff 45%, #c5dbff 100%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(22, 58, 107, 0.12),
+        0 0 28px rgba(0, 240, 255, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
     .logo-hero {
-      width: 100%;
-      max-width: 160px;
-      margin: 1.25rem auto 0.5rem;
+      width: 140px;
+      height: 140px;
+      max-width: 100%;
       display: block;
-      filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.35));
-      opacity: 0.95;
+      margin: 0 auto;
+      filter: drop-shadow(0 2px 8px rgba(22, 58, 107, 0.25));
+      opacity: 1;
     }
 
     /* SECTION LABEL */
@@ -498,7 +512,7 @@
     <section class="hero" aria-labelledby="hero-title">
       <div>
         <div class="hero-kicker">App-building home base</div>
-        <h1 id="hero-title">Apps we build.<br />Apps we help you build.</h1>
+        <h1 id="hero-title">Software with an edge.</h1>
         <p class="hero-lead">
           PWR Industries is the home base for apps we ship — starting with Veilrunner, a modern MUD client,
           and tools aimed at network engineers. Blues with a cyber edge. Real products, no pitch-deck filler.
@@ -509,7 +523,9 @@
         </div>
       </div>
       <aside class="hero-panel" aria-label="System status panel">
-        <img class="logo-hero" src="logo.svg" alt="" width="160" height="160" />
+        <div class="logo-hero-wrap">
+          <img class="logo-hero" src="logo.svg" alt="PWR Industries" width="140" height="140" />
+        </div>
         <div class="status-row">
           <span class="status-key">NODE</span>
           <span class="status-val">pwr.industries</span>
