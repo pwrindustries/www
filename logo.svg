@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="PWR Industries">
+  <title>PWR Industries</title>
+  <circle cx="512" cy="512" r="456" fill="none" stroke="#163A6B" stroke-width="28"/>
+  <circle cx="512" cy="512" r="414" fill="none" stroke="#A8B0B8" stroke-width="14"/>
+
+  <text x="512" y="500" text-anchor="middle" font-family="Montserrat, Arial Black, Arial, sans-serif" font-weight="800" font-size="210" letter-spacing="-6" fill="#163A6B">PWR</text>
+
+  <line x1="250" y1="660" x2="430" y2="660" stroke="#163A6B" stroke-width="8" stroke-linecap="butt"/>
+  <line x1="594" y1="660" x2="774" y2="660" stroke="#163A6B" stroke-width="8" stroke-linecap="butt"/>
+
+  <g transform="translate(512 660)" fill="none" stroke="#7A848C" stroke-width="10" stroke-linecap="round">
+    <circle r="28"/>
+    <circle r="10"/>
+    <line x1="0" y1="-28" x2="0" y2="-44"/>
+    <line x1="0" y1="28" x2="0" y2="44"/>
+    <line x1="-28" y1="0" x2="-44" y2="0"/>
+    <line x1="28" y1="0" x2="44" y2="0"/>
+    <line x1="-19.8" y1="-19.8" x2="-31.1" y2="-31.1"/>
+    <line x1="19.8" y1="19.8" x2="31.1" y2="31.1"/>
+    <line x1="19.8" y1="-19.8" x2="31.1" y2="-31.1"/>
+    <line x1="-19.8" y1="19.8" x2="-31.1" y2="31.1"/>
+  </g>
+
+  <line x1="248" y1="758" x2="286" y2="758" stroke="#163A6B" stroke-width="7"/>
+  <text x="512" y="772" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="700" font-size="48" letter-spacing="10" fill="#163A6B">INDUSTRIES</text>
+  <line x1="738" y1="758" x2="776" y2="758" stroke="#163A6B" stroke-width="7"/>
+</svg>
