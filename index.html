@@ -1,20 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PWR Industries</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PWR Industries — App Building Home Base</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b0f14; color: #e8eef5; }
-    main { text-align: center; padding: 2rem; }
-    h1 { font-weight: 600; letter-spacing: 0.04em; margin: 0 0 0.5rem; }
-    p { margin: 0; opacity: 0.7; }
+    :root {
+      --navy: #163A6B;
+      --navy-mid: #1e4a85;
+      --bg: #04080f;
+      --bg-panel: #0a1220;
+      --bg-card: #0e1830;
+      --steel: #A8B0B8;
+      --steel-dim: #7A848C;
+      --cyan: #00f0ff;
+      --cyan-hot: #5ef6ff;
+      --blue: #3d9eff;
+      --magenta: #c44dff;
+      --text: #e8eef7;
+      --muted: #8e9aab;
+      --line: rgba(0, 240, 255, 0.15);
+      --mono: "JetBrains Mono", "SF Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+      --sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --display: "Orbitron", "Rajdhani", "Inter", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ambient glow orbs */
+    .bg-fx {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 15% 10%, rgba(22, 58, 107, 0.55), transparent 60%),
+        radial-gradient(ellipse 40% 35% at 85% 20%, rgba(0, 240, 255, 0.08), transparent 55%),
+        radial-gradient(ellipse 45% 40% at 50% 100%, rgba(61, 158, 255, 0.1), transparent 50%);
+    }
+    .bg-fx::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: 0.7;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand img {
+      width: 48px;
+      height: 48px;
+      filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.45));
+    }
+
+    .nav-brand-text {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .nav-brand-text small {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--steel-dim);
+      margin-top: 0.15rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--steel);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg) !important;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      padding: 0.55rem 1rem;
+      text-decoration: none;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+    .nav-cta:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      color: var(--bg) !important;
+    }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2.5rem;
+      align-items: center;
+      padding: 2rem 0 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .hero-kicker::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 4.5vw, 3.35rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.15rem;
+      background: linear-gradient(120deg, #ffffff 20%, var(--cyan) 55%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-lead {
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 34em;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .btn-primary {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--cyan);
+      padding: 0.8rem 1.4rem;
+      text-decoration: none;
+      border: none;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.4);
+      transition: background 0.15s, transform 0.15s;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      background: var(--cyan-hot);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: transparent;
+      padding: 0.8rem 1.4rem;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: inline-block;
+    }
+    .btn-ghost:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+    }
+
+    /* hero side panel */
+    .hero-panel {
+      position: relative;
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      padding: 1.5rem;
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+      box-shadow:
+        inset 0 0 40px rgba(0, 240, 255, 0.04),
+        0 0 40px rgba(22, 58, 107, 0.4);
+    }
+    .hero-panel::before {
+      content: "SYS // APP_BASE";
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      color: var(--cyan-dim, var(--cyan));
+      color: var(--steel-dim);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.08);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+    }
+    .status-row:last-child { border-bottom: none; }
+    .status-key { color: var(--steel-dim); }
+    .status-val { color: var(--cyan); }
+    .status-val.ok::before {
+      content: "● ";
+      color: #00ff9d;
+      font-size: 0.6rem;
+    }
+
+    .logo-hero {
+      width: 100%;
+      max-width: 160px;
+      margin: 1.25rem auto 0.5rem;
+      display: block;
+      filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.35));
+      opacity: 0.95;
+    }
+
+    /* SECTION LABEL */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-head h2 {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .section-head .badge {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--steel-dim);
+      border: 1px dashed rgba(122, 132, 140, 0.5);
+      padding: 0.3rem 0.55rem;
+      background: rgba(22, 58, 107, 0.25);
+    }
+
+    /* CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.15rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      padding: 1.4rem 1.35rem 1.5rem;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), transparent);
+      opacity: 0.5;
+    }
+    .card:hover {
+      border-color: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.12);
+      transform: translateY(-3px);
+    }
+
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.6rem;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .card-link {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+    }
+    .card-link:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+
+    /* ABOUT STRIP */
+    .about {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(22, 58, 107, 0.35), rgba(10, 18, 32, 0.9));
+      border: 1px solid var(--line);
+      padding: 2rem 2.25rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    .about::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px,
+        rgba(0, 0, 0, 0.06) 6px
+      );
+      opacity: 0.5;
+    }
+
+    .about-logo {
+      width: 88px;
+      height: 88px;
+      filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.3));
+      position: relative;
+      z-index: 1;
+    }
+
+    .about-body {
+      position: relative;
+      z-index: 1;
+    }
+    .about-body h2 {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.65rem;
+    }
+    .about-body p {
+      color: var(--steel);
+      font-size: 1rem;
+      max-width: 48em;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--steel-dim);
+    }
+    .footer-brand a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    .footer-cta a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--navy-mid);
+      border: 1px solid var(--cyan);
+      padding: 0.6rem 1.15rem;
+      text-decoration: none;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+      transition: background 0.15s;
+    }
+    .footer-cta a:hover {
+      background: var(--navy);
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 2rem; }
+      .cards { grid-template-columns: 1fr; }
+      .about { grid-template-columns: 1fr; text-align: left; }
+      .nav-links li:not(:last-child) { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.85rem; }
+      .about { padding: 1.5rem; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>PWR Industries</h1>
-    <p>Site coming soon.</p>
-  </main>
+  <div class="bg-fx" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="#">
+        <img src="logo.svg" alt="PWR Industries" width="48" height="48" />
+        <div class="nav-brand-text">
+          PWR Industries
+          <small>pwr.industries</small>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#apps">Apps</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a class="nav-cta" href="mailto:#">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <div class="hero-kicker">App-building home base</div>
+        <h1 id="hero-title">Apps we build.<br />Apps we help you build.</h1>
+        <p class="hero-lead">
+          PWR Industries is the home base for apps we ship — starting with Veilrunner, a modern MUD client,
+          and tools aimed at network engineers. Blues with a cyber edge. Real products, no pitch-deck filler.
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#apps">View apps</a>
+          <a class="btn-ghost" href="mailto:#">Contact</a>
+        </div>
+      </div>
+      <aside class="hero-panel" aria-label="System status panel">
+        <img class="logo-hero" src="logo.svg" alt="" width="160" height="160" />
+        <div class="status-row">
+          <span class="status-key">NODE</span>
+          <span class="status-val">pwr.industries</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">MODE</span>
+          <span class="status-val ok">BUILD</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">FOCUS</span>
+          <span class="status-val">VEILRUNNER · NET</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">STACK</span>
+          <span class="status-val">CLIENTS · TOOLS</span>
+        </div>
+      </aside>
+    </section>
+
+    <div class="section-head" id="apps">
+      <h2>// Apps</h2>
+      <span class="badge">Building in public</span>
+    </div>
+
+    <div class="cards">
+      <article class="card" style="grid-column: 1 / -1;">
+        <div class="card-tag">Featured · In progress</div>
+        <h3>Veilrunner</h3>
+        <p>A modern MUD client — the first app shipping from PWR Industries. Built for players who want a clean, current client without abandoning the worlds they already love.</p>
+        <a class="card-link" href="#about">More soon →</a>
+      </article>
+      <article class="card">
+        <div class="card-tag">Coming soon</div>
+        <h3>Network engineering tools</h3>
+        <p>Practical apps for network engineers — utilities and workflows that earn a spot in the day-to-day toolkit. Details as each one ships.</p>
+        <span class="card-link" style="opacity:0.55;cursor:default;">On the roadmap</span>
+      </article>
+      <article class="card">
+        <div class="card-tag">Coming soon</div>
+        <h3>More apps</h3>
+        <p>Room for the next builds from this home base. Nothing listed until it’s real.</p>
+        <span class="card-link" style="opacity:0.55;cursor:default;">Watch this space</span>
+      </article>
+    </div>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <img class="about-logo" src="logo.svg" alt="PWR Industries logo" width="88" height="88" />
+      <div class="about-body">
+        <h2 id="about-title">// About</h2>
+        <p>
+          PWR Industries is an app-building home base — products we ship and builds we collaborate on.
+          First up: Veilrunner, plus tools for network engineers. Blues from the brand mark, pushed toward
+          neon cyber, because the work lives in the terminal glow, not the pitch deck.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-brand">
+        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a>
+      </div>
+      <div class="footer-cta">
+        <a href="mailto:#">Contact</a>
+      </div>
+    </footer>
+  </div>
 </body>
 </html>
