@@ -494,6 +494,28 @@
       background: var(--navy);
     }
 
+    /* OCTET download block (switch: data-octet-live on .octet-card) */
+    .octet-card:not([data-octet-live="true"]) .octet-live,
+    .octet-card[data-octet-live="true"] .octet-soon { display: none !important; }
+    .octet-meta,
+    .octet-count {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .octet-count[hidden] { display: none; }
+    .octet-count::before { content: "· "; }
+    .octet-sha {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.6;
+      word-break: break-all;
+      margin-bottom: 0.9rem;
+    }
+    .octet-sha code { color: var(--cyan); }
+
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; gap: 2rem; }
       .cards { grid-template-columns: 1fr; }
@@ -521,7 +543,7 @@
       <ul class="nav-links">
         <li><a href="#apps">Apps</a></li>
         <li><a href="about.html">About</a></li>
-        <li><a class="nav-cta" href="mailto:contact@pwr.industries">Contact</a></li>
+        <li><a class="nav-cta" href="contact.html">Contact</a></li>
       </ul>
     </nav>
 
@@ -534,7 +556,7 @@
         </p>
         <div class="hero-actions">
           <a class="btn-primary" href="#apps">View apps</a>
-          <a class="btn-ghost" href="mailto:contact@pwr.industries">Contact</a>
+          <a class="btn-ghost" href="contact.html">Contact</a>
         </div>
       </div>
       <aside class="hero-panel" aria-label="System status panel">
@@ -566,12 +588,24 @@
     </div>
 
     <div class="cards">
-      <article class="card" style="grid-column: 1 / -1;">
-        <div class="card-tag">Featured · Coming soon</div>
+      <!-- OCTET DOWNLOAD SWITCH: set data-octet-live on the next line to "true" to show the 1.0.0 download, checksum and counter. -->
+      <article class="card octet-card" id="octet" data-octet-live="false" style="grid-column: 1 / -1;">
+        <div class="card-tag octet-soon">Featured · Coming soon</div>
+        <div class="card-tag octet-live">Featured · v1.0.0 · Available now</div>
         <h3>Octet</h3>
         <p>A simple Mac TFTP server for network engineers — pick a folder, start the server, move images and configs without fighting the Mac.</p>
-        <div style="margin:1.1rem 0 0.9rem;">
+        <div class="octet-soon" style="margin:1.1rem 0 0.9rem;">
           <span class="btn-primary" aria-disabled="true" style="opacity:0.55;cursor:default;pointer-events:none;">Coming soon</span>
+        </div>
+        <div class="octet-live">
+          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin:1.1rem 0 0.9rem;">
+            <a class="btn-primary" href="https://github.com/pwrindustries/www/releases/download/octet-v1.0.0/Octet-1.0.0.dmg">Download Octet 1.0.0</a>
+            <span class="octet-meta">macOS · Apple silicon · 3.9 MB · Signed &amp; notarized</span>
+            <span class="octet-count" id="octet-downloads" hidden></span>
+          </div>
+          <div class="octet-sha">
+            SHA-256: <code>b2cb59a4934690734b9841ce97ab681592a9ad98f3a62ec53ca1fb282bbdb479</code>
+          </div>
         </div>
         <a class="card-link" href="about.html">Built for the change window →</a>
       </article>
@@ -611,9 +645,46 @@
         PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a>
       </div>
       <div class="footer-cta">
-        <a href="mailto:contact@pwr.industries">Contact</a>
+        <a href="contact.html">Contact</a>
       </div>
     </footer>
   </div>
+  <script>
+    /* Octet download counter: only runs when the card is live. Sums download_count for
+       Octet-*.dmg assets on published (non-draft) releases; hides itself on any error. */
+    (function () {
+      var card = document.getElementById("octet");
+      var el = document.getElementById("octet-downloads");
+      if (!card || !el || card.getAttribute("data-octet-live") !== "true") return;
+      var KEY = "octet-downloads-v1";
+      function show(n) {
+        if (typeof n !== "number" || !isFinite(n) || n < 1) return;
+        el.textContent = n.toLocaleString("en-US") + (n === 1 ? " download" : " downloads");
+        el.hidden = false;
+      }
+      try {
+        var cached = sessionStorage.getItem(KEY);
+        if (cached !== null) { show(parseInt(cached, 10)); return; }
+      } catch (e) {}
+      if (!window.fetch) return;
+      fetch("https://api.github.com/repos/pwrindustries/www/releases?per_page=100", {
+        headers: { "Accept": "application/vnd.github+json" }
+      })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (releases) {
+          if (!Array.isArray(releases)) return;
+          var total = 0;
+          releases.forEach(function (rel) {
+            if (rel.draft) return;
+            (rel.assets || []).forEach(function (a) {
+              if (/^Octet-.*\.dmg$/.test(a.name)) total += a.download_count || 0;
+            });
+          });
+          try { sessionStorage.setItem(KEY, String(total)); } catch (e) {}
+          show(total);
+        })
+        .catch(function () { el.hidden = true; });
+    })();
+  </script>
 </body>
 </html>
