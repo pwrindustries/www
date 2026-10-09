@@ -422,9 +422,9 @@
       </ul>
     </nav>
 
-    <div class="page-kicker">Contact</div>
-    <h1>Get in touch</h1>
-    <p class="contact-lead">
+    <div class="page-kicker" id="cf-kicker">Contact</div>
+    <h1 id="cf-title">Get in touch</h1>
+    <p class="contact-lead" id="cf-lead">
       Questions, feedback, bug reports, or a feature you want in Octet. Send a note and it comes
       straight to PWR Industries. We read everything and reply when there is something to say.
     </p>
@@ -432,7 +432,7 @@
     <form class="contact-form" id="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
       <!-- Web3Forms access key: the ONLY place to set it. Public by design; it is not a secret. -->
       <input type="hidden" name="access_key" value="0717bd42-64c3-48d6-bcba-c121e052fda7" />
-      <input type="hidden" name="subject" value="pwr.industries contact form" />
+      <input type="hidden" name="subject" id="cf-subject" value="pwr.industries contact form" />
       <input type="hidden" name="from_name" value="pwr.industries" />
       <!-- Honeypot: humans never see this; bots that tick it are rejected by Web3Forms. -->
       <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none;" />
@@ -448,7 +448,7 @@
         </div>
       </div>
       <div class="field">
-        <label for="cf-message">Message</label>
+        <label for="cf-message" id="cf-message-label">Message</label>
         <textarea id="cf-message" name="message" maxlength="5000" required placeholder="What's on your mind?"></textarea>
       </div>
 
@@ -478,6 +478,30 @@
   </div>
 
   <script src="https://web3forms.com/client/script.js" async defer></script>
+  <script>
+    /* Idea mode: contact.html?type=idea (linked from the "Suggest an app idea" button on the home page).
+       Changes the heading, intro, email subject and placeholder; adds a hidden "type" field.
+       Without the parameter the page is unchanged. */
+    (function () {
+      var params;
+      try { params = new URLSearchParams(window.location.search); } catch (e) { return; }
+      if (params.get("type") !== "idea") return;
+      var form = document.getElementById("contact-form");
+      document.title = "Suggest a Mac app — PWR Industries";
+      document.getElementById("cf-kicker").textContent = "App ideas";
+      document.getElementById("cf-title").textContent = "Suggest a Mac app";
+      document.getElementById("cf-lead").textContent =
+        "Network engineers: what tool do you wish existed for your Mac? Tell us the idea and the problem it would solve.";
+      document.getElementById("cf-subject").value = "pwr.industries app idea";
+      document.getElementById("cf-message-label").textContent = "Your app idea";
+      document.getElementById("cf-message").placeholder =
+        "What would the app do? What problem does it solve on your network?";
+      document.getElementById("cf-submit").textContent = "Send idea";
+      var t = document.createElement("input");
+      t.type = "hidden"; t.name = "type"; t.value = "App idea";
+      form.insertBefore(t, form.firstChild.nextSibling);
+    })();
+  </script>
   <script>
     (function () {
       var form = document.getElementById("contact-form");

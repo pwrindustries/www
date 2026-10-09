@@ -547,6 +547,33 @@
     }
     .octet-whatsnew a:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
 
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .btn-idea {
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 0.42rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .btn-idea:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
+    }
+    .btn-idea-glyph { font-size: 0.85rem; line-height: 1; letter-spacing: 0; }
+
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; gap: 2rem; }
       .cards { grid-template-columns: 1fr; }
@@ -647,7 +674,10 @@
         <div class="card-tag">Coming soon</div>
         <h3>Network engineering tools</h3>
         <p>Practical apps for network engineers — utilities and workflows that earn a spot in the day-to-day toolkit. Details as each one ships.</p>
-        <span class="card-link" style="opacity:0.55;cursor:default;">On the roadmap</span>
+        <div class="card-actions">
+          <span class="card-link" style="opacity:0.55;cursor:default;">On the roadmap</span>
+          <a class="btn-idea" href="contact.html?type=idea"><span class="btn-idea-glyph" aria-hidden="true">&#x1F4A1;</span>Suggest an app idea</a>
+        </div>
       </article>
       <article class="card">
         <div class="card-tag">Also building</div>
