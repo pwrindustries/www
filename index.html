@@ -517,6 +517,36 @@
     }
     .octet-sha code { color: var(--cyan); }
 
+    .octet-whatsnew {
+      font-size: 0.86rem;
+      color: var(--muted);
+      background: rgba(22, 58, 107, 0.22);
+      border-left: 2px solid var(--blue);
+      padding: 0.55rem 0.85rem;
+      margin: 0 0 1rem;
+      max-width: 52em;
+    }
+    .octet-whatsnew strong {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+      margin-right: 0.4rem;
+    }
+    .octet-whatsnew a {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+      white-space: nowrap;
+      margin-left: 0.35rem;
+    }
+    .octet-whatsnew a:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; gap: 2rem; }
       .cards { grid-template-columns: 1fr; }
@@ -609,6 +639,7 @@
           <div class="octet-sha">
             SHA-256: <code>b2cb59a4934690734b9841ce97ab681592a9ad98f3a62ec53ca1fb282bbdb479</code>
           </div>
+          <p class="octet-whatsnew"><strong>What&rsquo;s new in 1.0.1</strong>Downloads and uploads no longer time out, and the Allow switches always show their real on/off color.<a href="releases.html">Release notes →</a></p>
         </div>
         <a class="card-link" href="about.html">Built for the change window →</a>
       </article>
@@ -645,7 +676,7 @@
 
     <footer>
       <div class="footer-brand">
-        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a>
+        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a> · <a href="releases.html">Octet release notes</a>
       </div>
       <div class="footer-cta">
         <a href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">Support on Ko-fi</a>
