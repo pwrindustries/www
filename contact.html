@@ -395,6 +395,13 @@
     @media (max-width: 640px) {
       .field-row { grid-template-columns: 1fr; }
     }
+    .footer-cta a {
+      font-family: var(--mono, ui-monospace, Menlo, monospace);
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--cyan, #00f0ff); border: 1px solid rgba(0, 240, 255, 0.35);
+      padding: 0.5rem 1rem; text-decoration: none;
+    }
+    .footer-cta a:hover { background: rgba(0, 240, 255, 0.08); }
   </style>
 </head>
 <body>
@@ -463,6 +470,9 @@
     <footer>
       <div class="footer-brand">
         PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a>
+      </div>
+      <div class="footer-cta">
+        <a href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">Support on Ko-fi</a>
       </div>
     </footer>
   </div>

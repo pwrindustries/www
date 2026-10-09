@@ -477,6 +477,7 @@
       text-decoration: none;
     }
 
+    .footer-cta { display: flex; flex-wrap: wrap; gap: 0.6rem; }
     .footer-cta a {
       font-family: var(--mono);
       font-size: 0.72rem;
@@ -594,12 +595,14 @@
         <div class="card-tag octet-live">Featured · v1.0.0 · Available now</div>
         <h3>Octet</h3>
         <p>A simple Mac TFTP server for network engineers — pick a folder, start the server, move images and configs without fighting the Mac.</p>
-        <div class="octet-soon" style="margin:1.1rem 0 0.9rem;">
+        <div class="octet-soon" style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin:1.1rem 0 0.9rem;">
           <span class="btn-primary" aria-disabled="true" style="opacity:0.55;cursor:default;pointer-events:none;">Coming soon</span>
+          <a class="btn-ghost" href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">☕ Support on Ko-fi</a>
         </div>
         <div class="octet-live">
           <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin:1.1rem 0 0.9rem;">
             <a class="btn-primary" href="https://github.com/pwrindustries/www/releases/download/octet-v1.0.0/Octet-1.0.0.dmg">Download Octet 1.0.0</a>
+            <a class="btn-ghost" href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">☕ Support on Ko-fi</a>
             <span class="octet-meta">macOS · Apple silicon · 3.9 MB · Signed &amp; notarized</span>
             <span class="octet-count" id="octet-downloads" hidden></span>
           </div>
@@ -645,6 +648,7 @@
         PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a>
       </div>
       <div class="footer-cta">
+        <a href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">Support on Ko-fi</a>
         <a href="contact.html">Contact</a>
       </div>
     </footer>
