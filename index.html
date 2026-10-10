@@ -547,6 +547,25 @@
     }
     .octet-whatsnew a:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
 
+    .octet-demo { margin: 0 0 1.1rem; max-width: 720px; }
+    .octet-demo-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.45rem;
+    }
+    .octet-demo video {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 6px;
+      background: #0b1a2e;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.08);
+    }
+
     .card-actions {
       display: flex;
       flex-wrap: wrap;
@@ -667,6 +686,13 @@
             SHA-256: <code>e32cbb940af69f851eb630145ef1173ef1c69aaae9db9aa3c23c4bd86ec74a9c</code>
           </div>
           <p class="octet-whatsnew"><strong>What&rsquo;s new in 1.0.2</strong>Octet now tells you when an update is available, so you won&rsquo;t miss future fixes.<a href="releases.html">Release notes →</a></p>
+          <div class="octet-demo">
+            <div class="octet-demo-label">&#9654; Watch the 18-second demo</div>
+            <video controls preload="none" playsinline poster="media/octet-demo-poster.jpg" aria-label="Octet demo video with narration">
+              <source src="media/octet-demo.mp4" type="video/mp4" />
+              Your browser can&rsquo;t play this video. <a href="media/octet-demo.mp4">Download the demo</a>.
+            </video>
+          </div>
         </div>
         <a class="card-link" href="about.html">Built for the change window →</a>
       </article>
