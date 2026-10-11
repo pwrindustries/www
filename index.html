@@ -595,6 +595,18 @@
     }
     .btn-idea-glyph { font-size: 0.85rem; line-height: 1; letter-spacing: 0; }
 
+    .appstore-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem; background: #000; color: #fff; text-decoration: none;
+      border: 1px solid #a6a6a6; border-radius: 9px; padding: 0.38rem 0.95rem 0.42rem 0.75rem; line-height: 1.1;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .appstore-badge:hover { box-shadow: 0 0 18px rgba(0, 240, 255, 0.3); transform: translateY(-1px); }
+    .appstore-badge svg { width: 22px; height: 22px; fill: #fff; flex: none; }
+    .appstore-badge span { display: block; font-size: 0.62rem; }
+    .appstore-badge strong { display: block; font-size: 1.05rem; font-weight: 600; }
+    .octet-appstore-note { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em; color: var(--muted); margin: -0.3rem 0 0.8rem; }
+    .octet-appstore-note b { color: #ffd166; font-weight: 600; }
+
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; gap: 2rem; }
       .cards { grid-template-columns: 1fr; }
@@ -683,29 +695,34 @@
     </div>
 
     <div class="cards">
-      <!-- OCTET DOWNLOAD SWITCH: set data-octet-live on the next line to "true" to show the 1.2.0 download, checksum and counter. -->
+      <!-- OCTET DOWNLOAD SWITCH: set data-octet-live on the next line to "true" to show the Octet Lite (1.0.2) download, checksum and counter, plus the Octet TFTP App Store button. -->
       <article class="card octet-card" id="octet" data-octet-live="true" style="grid-column: 1 / -1;">
         <div class="card-tag octet-soon">Featured · Coming soon</div>
-        <div class="card-tag octet-live">Featured · v1.2.0 · Available now</div>
+        <div class="card-tag octet-live">Featured · Octet Lite 1.0.2 free · Octet TFTP 1.2 coming to the Mac App Store</div>
         <h3>Octet</h3>
-        <p>A simple Mac TFTP server for network engineers — pick a folder, start the server, move images and configs without fighting the Mac.</p>
+        <p>The TFTP server for Mac, built for network engineers — pick a folder, start the server, move images and configs without fighting the Mac. Octet TFTP 1.2 is coming to the Mac App Store; Octet Lite 1.0.2 is a free download with the basics.</p>
         <div class="octet-soon" style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin:1.1rem 0 0.9rem;">
           <span class="btn-primary" aria-disabled="true" style="opacity:0.55;cursor:default;pointer-events:none;">Coming soon</span>
           <a class="btn-ghost" href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;"><img src="img/kofi-cup.png" alt="" width="22" height="18" style="display:block;" />Support on Ko-fi</a>
         </div>
         <div class="octet-live">
           <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin:1.1rem 0 0.9rem;">
-            <a class="btn-primary" href="https://github.com/pwrindustries/www/releases/download/octet-v1.2.0/Octet-1.2.0.dmg">Download Octet 1.2.0</a>
+            <a class="appstore-badge" href="octet.html" aria-label="Octet TFTP on the Mac App Store: coming soon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-2.99-.79-1.54.02-2.96.9-3.75 2.27-1.6 2.78-.41 6.89 1.15 9.14.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.24-.02 2.02-1.12 2.77-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.39-.92-2.41-3.66zM14.1 5.86c.63-.77 1.06-1.83.94-2.9-.91.04-2.02.61-2.67 1.37-.58.67-1.1 1.76-.96 2.8 1.02.08 2.06-.52 2.69-1.27z"/></svg>
+              <div><span>Octet TFTP 1.2 on the</span><strong>Mac App Store</strong></div>
+            </a>
+            <a class="btn-primary" href="https://github.com/pwrindustries/www/releases/download/octet-v1.0.2/Octet-1.0.2.dmg">Download Octet Lite (free)</a>
             <a class="btn-ghost" href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;"><img src="img/kofi-cup.png" alt="" width="22" height="18" style="display:block;" />Support on Ko-fi</a>
-            <span class="octet-meta">macOS · Apple silicon · 4.5 MB · Signed &amp; notarized</span>
+            <span class="octet-meta">Octet Lite 1.0.2 · macOS 14+ · Apple silicon · 4.1 MB · Signed &amp; notarized</span>
             <span class="octet-count" id="octet-downloads" hidden></span>
           </div>
           <div class="octet-sha">
-            SHA-256: <code>05380ff3e7927a7198168d1cf1c3c91027e3274ceeecf757e93c6384c7ca16a8</code>
+            Octet Lite SHA-256: <code>e32cbb940af69f851eb630145ef1173ef1c69aaae9db9aa3c23c4bd86ec74a9c</code>
           </div>
-          <p class="octet-whatsnew"><strong>What&rsquo;s new in 1.2</strong>Transfers about 3&times; faster, live progress bars, safe uploads that never leave a half-written file, an allowed-devices list, and a menu bar mode with a new icon.<a href="releases.html">Release notes →</a><a href="support.html" style="margin-left:1.2rem">Help &amp; setup →</a><a href="octet.html" style="margin-left:1.2rem">Octet page →</a></p>
+          <p class="octet-appstore-note"><b>Octet TFTP 1.2</b> · $4.99 on the Mac App Store · Coming soon, in review with Apple</p>
+          <p class="octet-whatsnew"><strong>Octet TFTP 1.2 · Mac App Store</strong>Transfers about 3&times; faster, live progress bars, safe uploads that never leave a half-written file, an allowed-devices list, and a menu bar mode with a new icon.<a href="releases.html">Release notes →</a><a href="support.html" style="margin-left:1.2rem">Help &amp; setup →</a><a href="octet.html" style="margin-left:1.2rem">Octet page →</a></p>
           <div class="octet-demo">
-            <div class="octet-demo-label">&#9654; Watch the 30-second demo</div>
+            <div class="octet-demo-label">&#9654; Watch the 30-second Octet TFTP 1.2 demo</div>
             <video controls preload="none" playsinline poster="media/octet-demo-poster.jpg" aria-label="Octet demo video with narration">
               <source src="media/octet-demo.mp4" type="video/mp4" />
               Your browser can&rsquo;t play this video. <a href="media/octet-demo.mp4">Download the demo</a>.
@@ -761,12 +778,12 @@
   </div>
   <script>
     /* Octet download counter: only runs when the card is live. Sums download_count for
-       Octet-*.dmg assets on published (non-draft) releases; hides itself on any error. */
+       Octet-1.0.x.dmg (Octet Lite line) assets on published (non-draft) releases; hides itself on any error. */
     (function () {
       var card = document.getElementById("octet");
       var el = document.getElementById("octet-downloads");
       if (!card || !el || card.getAttribute("data-octet-live") !== "true") return;
-      var KEY = "octet-downloads-v1";
+      var KEY = "octet-downloads-v2";
       function show(n) {
         if (typeof n !== "number" || !isFinite(n) || n < 1) return;
         el.textContent = n.toLocaleString("en-US") + (n === 1 ? " download" : " downloads");
@@ -787,7 +804,7 @@
           releases.forEach(function (rel) {
             if (rel.draft) return;
             (rel.assets || []).forEach(function (a) {
-              if (/^Octet-.*\.dmg$/.test(a.name)) total += a.download_count || 0;
+              if (/^Octet-1\.0\.\d+\.dmg$/.test(a.name)) total += a.download_count || 0;
             });
           });
           try { sessionStorage.setItem(KEY, String(total)); } catch (e) {}
