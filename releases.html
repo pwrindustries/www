@@ -338,11 +338,59 @@
       Get the latest build on the <a href="index.html#octet">Octet download card</a>.
     </p>
 
+    <section class="release" id="v1.2.0" aria-labelledby="v1.2.0-title">
+      <div class="release-head">
+        <h2 id="v1.2.0-title"><a href="#v1.2.0">Octet 1.2.0</a></h2>
+        <span class="release-date">October 11, 2026</span>
+        <span class="release-badge">Latest</span>
+      </div>
+      <h3>New</h3>
+      <ul>
+        <li>
+          <strong>Faster transfers.</strong> Octet now supports TFTP option negotiation (block size,
+          transfer size and timeout, RFC 2347, 2348 and 2349). Devices that ask for bigger blocks get them,
+          and transfers run about 3&times; faster than classic 512-byte TFTP. Devices that don&rsquo;t
+          support options still work the classic way.
+        </li>
+        <li>
+          <strong>Live progress bars.</strong> Every active transfer gets its own bar showing the percent,
+          amount moved, speed and time left. When the size isn&rsquo;t known, a moving bar shows the amount
+          so far. Finished transfers turn green, and failed ones turn red.
+        </li>
+        <li>
+          <strong>Safe uploads.</strong> Uploads are written to a hidden temporary file and swapped in only
+          once the last block arrives. A failed or aborted upload never damages the existing file or leaves
+          a partial one behind, and any leftover temporary files are cleaned up automatically.
+        </li>
+        <li>
+          <strong>Allowed devices.</strong> Limit the server to specific IP addresses or ranges such as
+          <code>10.1.1.0/24</code>, with an on/off switch. Devices not on the list get &ldquo;Access
+          denied&rdquo;, every refusal is logged, and the list is saved between launches.
+        </li>
+        <li>
+          <strong>Menu bar mode.</strong> A new &ldquo;Transfer 8&rdquo; icon shows at a glance whether the
+          server is stopped, running or transferring. From the menu you can start and stop the server, flip
+          the download and upload switches, see your IP address and check recent transfers. Octet keeps
+          serving when the window is closed.
+        </li>
+        <li>
+          <strong>Window size.</strong> The window always opens at a comfortable size with the transfer log
+          visible.
+        </li>
+      </ul>
+      <h3>Fixes</h3>
+      <ul>
+        <li>The menu bar now shows the correct port.</li>
+        <li>Octet no longer uses high CPU while running in menu bar mode.</li>
+      </ul>
+      <p class="release-note">Requires macOS 14 or later on a Mac with Apple silicon. Free.
+        On 1.0.2, Octet will offer this update on its own. On 1.0.0 or 1.0.1, download it once by hand.</p>
+    </section>
+
     <section class="release" id="v1.0.2" aria-labelledby="v1.0.2-title">
       <div class="release-head">
         <h2 id="v1.0.2-title"><a href="#v1.0.2">Octet 1.0.2</a></h2>
         <span class="release-date">October 9, 2026</span>
-        <span class="release-badge">Latest</span>
       </div>
       <h3>New</h3>
       <ul>
