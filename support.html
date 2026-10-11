@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Octet support — PWR Industries</title>
+  <meta name="description" content="Help for Octet, the TFTP server for Mac: getting started, port 69, allowed devices, firewall and routing tips, FAQ and contact." />
+  <link rel="canonical" href="https://www.pwr.industries/support.html" />
+  <style>
+    :root {
+      --navy: #163A6B;
+      --navy-mid: #1e4a85;
+      --bg: #04080f;
+      --bg-panel: #0a1220;
+      --bg-card: #0e1830;
+      --steel: #A8B0B8;
+      --steel-dim: #7A848C;
+      --cyan: #00f0ff;
+      --cyan-hot: #5ef6ff;
+      --blue: #3d9eff;
+      --text: #e8eef7;
+      --muted: #8e9aab;
+      --line: rgba(0, 240, 255, 0.15);
+      --mono: "JetBrains Mono", "SF Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+      --sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-fx {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 15% 10%, rgba(22, 58, 107, 0.55), transparent 60%),
+        radial-gradient(ellipse 40% 35% at 85% 20%, rgba(0, 240, 255, 0.08), transparent 55%),
+        radial-gradient(ellipse 45% 40% at 50% 100%, rgba(61, 158, 255, 0.1), transparent 50%);
+    }
+    .bg-fx::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: 0.7;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2.75rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      padding: 6px;
+      background: linear-gradient(160deg, #f4f8ff 0%, #dce9ff 45%, #c5dbff 100%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgba(22, 58, 107, 0.12),
+        0 0 18px rgba(0, 240, 255, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .nav-brand img {
+      width: 40px;
+      height: 40px;
+      display: block;
+      filter: drop-shadow(0 1px 4px rgba(22, 58, 107, 0.25));
+    }
+
+    .nav-brand-text {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .nav-brand-text small {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--steel-dim);
+      margin-top: 0.15rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--steel);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] { color: var(--cyan); }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg) !important;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      padding: 0.55rem 1rem;
+      text-decoration: none;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
+    }
+    .nav-cta:hover { filter: brightness(1.1); color: var(--bg) !important; }
+
+    .page-kicker {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .page-kicker::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    h1 {
+      font-size: clamp(1.85rem, 4vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.75rem;
+      background: linear-gradient(120deg, #ffffff 20%, var(--cyan) 55%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--steel-dim);
+    }
+    .footer-brand a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+
+    .lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 42em;
+      margin-bottom: 2.5rem;
+    }
+    .lead a { color: var(--cyan); text-decoration: none; }
+    .lead a:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+
+    .release {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      padding: 1.4rem 1.5rem 1.5rem;
+      position: relative;
+      margin-bottom: 1.25rem;
+      scroll-margin-top: 1.5rem;
+    }
+    .release::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), transparent);
+      opacity: 0.55;
+    }
+    .release-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.4rem 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .release-head h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .release-head h2 a { color: inherit; text-decoration: none; }
+    .release-head h2 a:hover { color: var(--cyan); }
+    .release-date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--steel-dim);
+    }
+    .release-badge {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      padding: 0.15rem 0.5rem;
+    }
+    .release h3 {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+    }
+    .release h3:first-of-type { margin-top: 0; }
+    .release ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .release li {
+      position: relative;
+      padding-left: 1.2rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 44em;
+    }
+    .release li::before {
+      content: "›";
+      position: absolute;
+      left: 0.1rem;
+      color: var(--cyan);
+      font-family: var(--mono);
+    }
+    .release li strong { color: var(--text); font-weight: 600; }
+    .release-note {
+      margin-top: 1rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.88rem;
+      color: var(--steel);
+      background: rgba(22, 58, 107, 0.25);
+      border-left: 2px solid var(--blue);
+    }
+    .release-note a { color: var(--cyan); text-decoration: none; }
+
+    .footer-cta { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    @media (max-width: 640px) {
+      .nav-links li:not(:last-child) { display: none; }
+      .release { padding: 1.2rem 1.1rem 1.25rem; }
+    }
+    .footer-cta a {
+      font-family: var(--mono, ui-monospace, Menlo, monospace);
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--cyan, #00f0ff); border: 1px solid rgba(0, 240, 255, 0.35);
+      padding: 0.5rem 1rem; text-decoration: none;
+    }
+    .footer-cta a:hover { background: rgba(0, 240, 255, 0.08); }
+
+    .release p { color: var(--muted); font-size: 0.98rem; max-width: 44em; margin-bottom: 0.7rem; }
+    .release p:last-child { margin-bottom: 0; }
+    .release p strong { color: var(--text); font-weight: 600; }
+    .release a { color: var(--cyan); text-decoration: none; }
+    .release a:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+    .release code {
+      font-family: var(--mono); font-size: 0.86em; color: var(--cyan-hot);
+      background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.12); padding: 0.05rem 0.35rem;
+    }
+    .release pre {
+      font-family: var(--mono); font-size: 0.84rem; color: var(--text); background: var(--bg);
+      border: 1px solid var(--line); padding: 0.8rem 1rem; margin: 0.2rem 0 0.9rem; overflow-x: auto; max-width: 44em;
+    }
+    .release ol { margin: 0 0 0.6rem 1.3rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.45rem; max-width: 44em; }
+    .release ol li { padding-left: 0.2rem; }
+    .release ol li::before { content: none; }
+    #faq h3 { font-family: var(--sans); text-transform: none; letter-spacing: 0; font-size: 1rem; color: var(--text); margin: 1.1rem 0 0.35rem; }
+    #faq h3:first-of-type { margin-top: 0; }
+    .toc { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: -1rem 0 2rem; }
+    .toc a {
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.25); padding: 0.35rem 0.7rem; text-decoration: none;
+    }
+    .toc a:hover { background: rgba(0, 240, 255, 0.08); }
+  </style>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="PWR Industries" />
+  <meta property="og:title" content="Octet support — PWR Industries" />
+  <meta property="og:description" content="Help for Octet, the TFTP server for Mac: getting started, port 69, allowed devices, firewall and routing tips, FAQ and contact." />
+  <meta property="og:url" content="https://www.pwr.industries/support.html" />
+  <meta property="og:image" content="https://www.pwr.industries/img/pwr-og.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="PWR Industries logo with the tagline Apple Development &amp; Tools for Network Engineers" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@PWRIndustries" />
+  <meta name="twitter:title" content="Octet support — PWR Industries" />
+  <meta name="twitter:description" content="Help for Octet, the TFTP server for Mac: getting started, port 69, allowed devices, firewall and routing tips, FAQ and contact." />
+  <meta name="twitter:image" content="https://www.pwr.industries/img/pwr-og.png" />
+  <meta name="twitter:image:alt" content="PWR Industries logo with the tagline Apple Development &amp; Tools for Network Engineers" />
+</head>
+<body>
+  <div class="bg-fx" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="index.html">
+        <span class="nav-brand-mark"><img src="logo.svg" alt="PWR Industries" width="40" height="40" /></span>
+        <div class="nav-brand-text">
+          PWR Industries
+          <small>pwr.industries</small>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#apps">Apps</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a class="nav-cta" href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="page-kicker">Octet · Support</div>
+    <h1>Octet support</h1>
+    <p class="lead">
+      Octet is a TFTP server for Mac, built for network engineers. This page covers setup, the
+      common problems and how to reach us. For what changed in each version, see the
+      <a href="releases.html">release notes</a>.
+    </p>
+    <nav class="toc" aria-label="On this page">
+      <a href="#start">Getting started</a><a href="#port69">Port 69</a><a href="#allowed">Allowed devices</a>
+      <a href="#firewall">Firewalls &amp; routing</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+    </nav>
+
+    <section class="release" id="start" aria-labelledby="start-title">
+      <div class="release-head"><h2 id="start-title"><a href="#start">Getting started</a></h2></div>
+      <ol>
+        <li>Click <strong>Choose&hellip;</strong> next to <em>Root Folder for TFTP</em> and pick the folder that holds your images and configs.</li>
+        <li>Turn on <strong>Allow downloads</strong> (devices can GET files) and/or <strong>Allow uploads</strong> (devices can PUT files).</li>
+        <li>Click <strong>Start server</strong>. Octet shows your Mac&rsquo;s LAN IP address and port 69.</li>
+        <li>From the device, copy to or from that address. On Cisco IOS / IOS-XE, for example:</li>
+      </ol>
+<pre>copy tftp://192.168.1.50/c9300-17.15.06.bin flash:
+copy running-config tftp://192.168.1.50/lab-sw1-config.txt</pre>
+      <p>Each transfer gets a live progress bar with speed and time left, and a line in the transfer log.
+        Uploads are written to a hidden temporary file and only replace the real file once they finish, so a failed
+        upload never damages an existing file. Close the window and Octet keeps serving from the menu bar; choose
+        <strong>Quit Octet</strong> from the menu bar icon to stop it completely.</p>
+    </section>
+
+    <section class="release" id="port69" aria-labelledby="port69-title">
+      <div class="release-head"><h2 id="port69-title"><a href="#port69">Port 69</a></h2></div>
+      <ul>
+        <li>Octet uses UDP port 69, the standard TFTP port, so devices work with their default settings.</li>
+        <li>On current versions of macOS, Octet opens port 69 directly. No admin password and no Terminal are needed.</li>
+        <li>If Octet says another app is already using UDP 69, quit the other TFTP server (including the built-in
+          <code>tftpd</code> if you enabled it) and click Start again.</li>
+        <li>Octet only listens while the server is started.</li>
+      </ul>
+    </section>
+
+    <section class="release" id="allowed" aria-labelledby="allowed-title">
+      <div class="release-head"><h2 id="allowed-title"><a href="#allowed">Allowed devices</a></h2></div>
+      <ul>
+        <li>Click <strong>Allowed devices&hellip;</strong> to limit who can use the server. Add single addresses (<code>10.1.1.20</code>)
+          or ranges (<code>10.1.1.0/24</code>), then turn the switch on.</li>
+        <li>Anyone not on the list gets &ldquo;Access denied&rdquo;, and the refusal is written to the transfer log.</li>
+        <li>Tests from the Mac itself come from <code>127.0.0.1</code>, so add that address if you test locally with the list on.</li>
+        <li>The list is saved between launches.</li>
+      </ul>
+    </section>
+
+    <section class="release" id="firewall" aria-labelledby="firewall-title">
+      <div class="release-head"><h2 id="firewall-title"><a href="#firewall">Firewalls &amp; routing</a></h2></div>
+      <p>If a device can ping your Mac but its TFTP copy times out, something between them is usually blocking TFTP.</p>
+      <ul>
+        <li><strong>Between subnets:</strong> a router or firewall must allow UDP 69 from the device to your Mac,
+          <strong>and</strong> the transfer traffic that follows. TFTP moves data on high, random UDP ports
+          (1024&ndash;65535) in both directions, so allow those too, or use a firewall with a TFTP helper.</li>
+        <li><strong>Simplest fix in the field:</strong> put your Mac on the same network or VLAN as the device.</li>
+        <li><strong>Mac firewall:</strong> if it&rsquo;s on, allow incoming connections for Octet in
+          System Settings &rarr; Network &rarr; Firewall &rarr; Options.</li>
+        <li><strong>Device source interface:</strong> on switches with a management port or VRF, tell the device which interface
+          to use, for example <code>ip tftp source-interface GigabitEthernet0/0</code>.</li>
+        <li>Check that the device has a route (or default gateway) back to your Mac&rsquo;s network.</li>
+      </ul>
+    </section>
+
+    <section class="release" id="faq" aria-labelledby="faq-title">
+      <div class="release-head"><h2 id="faq-title"><a href="#faq">FAQ</a></h2></div>
+      <h3>Nothing shows up in the log when the device tries</h3>
+      <p>The request isn&rsquo;t reaching your Mac. See <a href="#firewall">Firewalls &amp; routing</a>.</p>
+      <h3>The log says &ldquo;Refused&rdquo; or the device says &ldquo;Access denied&rdquo;</h3>
+      <p>Allowed devices is on and the device&rsquo;s address isn&rsquo;t on the list, or downloads/uploads are switched off.</p>
+      <h3>Uploads fail</h3>
+      <p>Make sure <strong>Allow uploads</strong> is on and the folder is one you can write to. If you moved or renamed the
+        folder, click <strong>Choose&hellip;</strong> and pick it again.</p>
+      <h3>How fast is it?</h3>
+      <p>Octet negotiates bigger blocks with devices that support it (RFC 2347/2348/2349), which is about 3&times; faster than
+        classic 512-byte TFTP. Older devices still work the classic way.</p>
+      <h3>Does Octet send my files or data anywhere?</h3>
+      <p>No. Files only move between your Mac and your own devices. See the <a href="privacy.html">privacy policy</a>.</p>
+      <h3>I switched between the website version and the Mac App Store version</h3>
+      <p>The App Store version keeps its settings separately, so choose your TFTP folder and re-enter your allowed devices once.</p>
+      <h3>What do I need?</h3>
+      <p>macOS 14 or later.</p>
+    </section>
+
+    <section class="release" id="contact" aria-labelledby="contact-title">
+      <div class="release-head"><h2 id="contact-title"><a href="#contact">Contact support</a></h2></div>
+      <ul>
+        <li>Use the <a href="contact.html">contact form</a> or email <a href="mailto:contact@pwr.industries">contact@pwr.industries</a>.</li>
+        <li>Include your macOS version, your Octet version (bottom-left of the window), the device model, and the lines from
+          the transfer log (<strong>Export log&hellip;</strong> saves them to a file).</li>
+        <li>What&rsquo;s new in each version: <a href="releases.html">Octet release notes</a>.</li>
+      </ul>
+    </section>
+
+    <footer style="margin-top:3rem;">
+      <div class="footer-brand">
+        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a> · <a href="support.html">Support</a> · <a href="privacy.html">Privacy</a> · <a href="releases.html">Octet release notes</a>
+      </div>
+      <div class="footer-cta">
+        <a href="https://x.com/PWRIndustries" target="_blank" rel="noopener" aria-label="PWR Industries on X">Follow @PWRIndustries on X</a>
+        <a href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">Support on Ko-fi</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </footer>
+  </div>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fc42c8ee621c4cedb68a0e7087149c45"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
