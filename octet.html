@@ -637,6 +637,8 @@
     .demo li { color: var(--muted); font-size: 0.95rem; padding-left: 1.2rem; position: relative; }
     .demo li::before { content: "›"; position: absolute; left: 0.1rem; color: var(--cyan); font-family: var(--mono); }
     .demo li strong { color: var(--text); }
+    .demo-label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.5rem; }
+    .lite-demo { margin-top: 2rem; }
 
     /* comparison */
     .compare-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--bg-card); }
@@ -784,10 +786,13 @@
         <span class="badge">Octet TFTP 1.2</span>
       </div>
       <div class="demo">
-        <video controls preload="none" playsinline poster="media/octet-demo-poster.jpg" aria-label="Octet demo video with narration">
+        <div>
+        <div class="demo-label">&#9654; Octet TFTP 1.2 demo</div>
+        <video controls preload="none" playsinline poster="media/octet-demo-poster.jpg" aria-label="Octet TFTP 1.2 demo video with narration">
           <source src="media/octet-demo.mp4" type="video/mp4" />
           Your browser can&rsquo;t play this video. <a href="media/octet-demo.mp4">Download the demo</a>.
         </video>
+        </div>
         <ul>
           <li><strong>One click</strong> to start serving a folder on port 69.</li>
           <li><strong>About 3&times; faster</strong> with devices that negotiate bigger blocks.</li>
@@ -843,6 +848,21 @@
         </table>
       </div>
       <p class="compare-note">Both versions need a Mac with Apple silicon. Octet Lite checks this site for updates once a day; Octet TFTP makes no internet connections.<br />Octet Lite 1.0.2 · 4.1 MB · Signed &amp; notarized · SHA-256: <code>e32cbb940af69f851eb630145ef1173ef1c69aaae9db9aa3c23c4bd86ec74a9c</code></p>
+      <div class="demo lite-demo" id="lite-demo">
+        <div>
+        <div class="demo-label">&#9654; Octet Lite demo</div>
+        <video controls preload="none" playsinline poster="media/octet-lite-demo-poster.jpg" aria-label="Octet Lite demo video with narration">
+          <source src="media/octet-lite-demo.mp4" type="video/mp4" />
+          Your browser can&rsquo;t play this video. <a href="media/octet-lite-demo.mp4">Download the Octet Lite demo</a>.
+        </video>
+        </div>
+        <ul>
+          <li><strong>Octet Lite</strong> is the free download from this site.</li>
+          <li><strong>Pick a folder</strong>, switch on downloads or uploads, and click Start.</li>
+          <li><strong>Live transfer log</strong> shows every request.</li>
+          <li><strong>Want more?</strong> Octet TFTP 1.2 adds faster transfers, progress bars, safe uploads, allowed devices and menu bar mode. $4.99 on the Mac App Store.</li>
+        </ul>
+      </div>
     </section>
 
     <section class="p-section" id="features" aria-labelledby="features-title">
