@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Octet TFTP — The TFTP server for Mac | PWR Industries</title>
-  <meta name="description" content="Octet TFTP, the TFTP server for Mac, coming soon to the Mac App Store. Serve firmware and configs on port 69 with live progress, safe uploads and allowed devices. Octet Lite is a free download." />
+  <meta name="description" content="Octet TFTP, the TFTP server for Mac (Apple silicon), coming soon to the Mac App Store. Serve firmware and configs on port 69 with live progress, safe uploads and allowed devices. Octet TFTP Lite is a free download." />
   <link rel="canonical" href="https://www.pwr.industries/octet.html" />
   <style>
     :root {
@@ -721,7 +721,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="PWR Industries" />
   <meta property="og:title" content="Octet TFTP — The TFTP server for Mac | PWR Industries" />
-  <meta property="og:description" content="Octet TFTP, the TFTP server for Mac, coming soon to the Mac App Store. Serve firmware and configs on port 69 with live progress, safe uploads and allowed devices. Octet Lite is a free download." />
+  <meta property="og:description" content="Octet TFTP, the TFTP server for Mac (Apple silicon), coming soon to the Mac App Store. Serve firmware and configs on port 69 with live progress, safe uploads and allowed devices. Octet TFTP Lite is a free download." />
   <meta property="og:url" content="https://www.pwr.industries/octet.html" />
   <meta property="og:image" content="https://www.pwr.industries/img/octet-og.png" />
   <meta property="og:image:type" content="image/png" />
@@ -731,9 +731,90 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@PWRIndustries" />
   <meta name="twitter:title" content="Octet TFTP — The TFTP server for Mac | PWR Industries" />
-  <meta name="twitter:description" content="Octet TFTP, the TFTP server for Mac, coming soon to the Mac App Store. Serve firmware and configs on port 69 with live progress, safe uploads and allowed devices. Octet Lite is a free download." />
+  <meta name="twitter:description" content="Octet TFTP, the TFTP server for Mac (Apple silicon), coming soon to the Mac App Store. Serve firmware and configs on port 69 with live progress, safe uploads and allowed devices. Octet TFTP Lite is a free download." />
   <meta name="twitter:image" content="https://www.pwr.industries/img/octet-og.png" />
   <meta name="twitter:image:alt" content="Octet TFTP, the TFTP server for Mac, next to the app window" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Octet TFTP Lite",
+  "alternateName": "Octet Lite",
+  "description": "Free basic TFTP server for Mac: port 69, GET/PUT switches, folder picker and transfer log. For Apple silicon Macs.",
+  "softwareVersion": "1.0.2",
+  "operatingSystem": "macOS 14 or later",
+  "processorRequirements": "Apple silicon",
+  "applicationCategory": "DeveloperApplication",
+  "url": "https://www.pwr.industries/octet.html",
+  "downloadUrl": "https://github.com/pwrindustries/www/releases/download/octet-v1.0.2/Octet-1.0.2.dmg",
+  "screenshot": [
+    "https://www.pwr.industries/img/octet/01-octet-hero.jpg",
+    "https://www.pwr.industries/img/octet/02-live-progress.jpg",
+    "https://www.pwr.industries/img/octet/03-safe-uploads.jpg",
+    "https://www.pwr.industries/img/octet/04-allowed-devices.jpg",
+    "https://www.pwr.industries/img/octet/05-menu-bar.jpg"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PWR Industries LLC",
+    "url": "https://www.pwr.industries/"
+  }
+}
+  </script>
+  <!-- TODO (enable once Apple approves): paid "Octet TFTP" Mac App Store entry. Replace APP_STORE_URL with the real
+       apps.apple.com link, then rename type="text/plain" to type="application/ld+json". Not published until then.
+  <script type="text/plain" data-pending="octet-tftp-appstore">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Octet TFTP","softwareVersion":"1.2.0",
+   "operatingSystem":"macOS 14 or later","applicationCategory":"DeveloperApplication","url":"APP_STORE_URL",
+   "offers":{"@type":"Offer","price":"4.99","priceCurrency":"USD","url":"APP_STORE_URL"},
+   "publisher":{"@type":"Organization","name":"PWR Industries LLC","url":"https://www.pwr.industries/"}}
+  </script>
+  -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need an admin password for port 69?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not with Octet TFTP. On current macOS, it opens UDP port 69 directly, with no helper, no Terminal and no password. Octet Lite opens port 69 directly where macOS allows it, and otherwise falls back to a small admin helper that may ask for your admin password."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "The device can ping my Mac, but the copy times out",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Something between them is blocking TFTP. Between subnets, allow UDP 69 to your Mac plus the high UDP ports the transfer uses, or use a firewall with a TFTP helper. Check the Mac firewall and the device’s route back. The easy fix is putting your Mac on the same VLAN. More in Support"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What’s the difference between Lite and Octet TFTP?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Octet Lite (1.0.2) is the free, basic server: port 69, GET/PUT switches, folder picker and log. Octet TFTP adds faster transfers, progress bars, safe uploads, allowed devices and menu bar mode, and it installs and updates through the Mac App Store."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Octet collect any data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. There are no accounts, no analytics and no tracking. Files move only between your Mac and your own devices. Read the privacy policy"
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <div class="bg-fx" aria-hidden="true"></div>
@@ -961,6 +1042,7 @@
       </div>
       <div class="link-row">
         <a class="btn-ghost" href="support.html">Help &amp; setup guide</a>
+        <a class="btn-ghost" href="mac-tftp-server.html">How to set up a TFTP server on Mac</a>
         <a class="btn-ghost" href="releases.html">Release notes</a>
         <a class="btn-ghost" href="contact.html">Contact support</a>
       </div>
@@ -980,7 +1062,7 @@
 
     <footer>
       <div class="footer-brand">
-        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a> · <a href="octet.html">Octet</a> · <a href="support.html">Support</a> · <a href="privacy.html">Privacy</a> · <a href="releases.html">Octet release notes</a>
+        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a> · <a href="octet.html">Octet</a> · <a href="mac-tftp-server.html">Mac TFTP guide</a> · <a href="support.html">Support</a> · <a href="privacy.html">Privacy</a> · <a href="releases.html">Octet release notes</a>
       </div>
       <div class="footer-cta">
         <a href="https://x.com/PWRIndustries" target="_blank" rel="noopener" aria-label="PWR Industries on X">Follow @PWRIndustries on X</a>

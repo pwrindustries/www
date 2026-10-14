@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How to set up a TFTP server on Mac | PWR Industries</title>
+  <meta name="description" content="How to set up a TFTP server on Mac: the built-in macOS tftpd with launchctl, step by step, or the easy way with Octet TFTP. Includes Cisco IOS copy commands." />
+  <link rel="canonical" href="https://www.pwr.industries/mac-tftp-server.html" />
+  <style>
+    :root {
+      --navy: #163A6B;
+      --navy-mid: #1e4a85;
+      --bg: #04080f;
+      --bg-panel: #0a1220;
+      --bg-card: #0e1830;
+      --steel: #A8B0B8;
+      --steel-dim: #7A848C;
+      --cyan: #00f0ff;
+      --cyan-hot: #5ef6ff;
+      --blue: #3d9eff;
+      --magenta: #c44dff;
+      --text: #e8eef7;
+      --muted: #8e9aab;
+      --line: rgba(0, 240, 255, 0.15);
+      --mono: "JetBrains Mono", "SF Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+      --sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --display: "Orbitron", "Rajdhani", "Inter", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ambient glow orbs */
+    .bg-fx {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 15% 10%, rgba(22, 58, 107, 0.55), transparent 60%),
+        radial-gradient(ellipse 40% 35% at 85% 20%, rgba(0, 240, 255, 0.08), transparent 55%),
+        radial-gradient(ellipse 45% 40% at 50% 100%, rgba(61, 158, 255, 0.1), transparent 50%);
+    }
+    .bg-fx::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: 0.7;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      padding: 6px;
+      background: linear-gradient(160deg, #f4f8ff 0%, #dce9ff 45%, #c5dbff 100%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 12px;
+      box-shadow:
+        0 0 0 1px rgba(22, 58, 107, 0.12),
+        0 0 18px rgba(0, 240, 255, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .nav-brand img {
+      width: 40px;
+      height: 40px;
+      display: block;
+      filter: drop-shadow(0 1px 4px rgba(22, 58, 107, 0.25));
+    }
+
+    .nav-brand-text {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .nav-brand-text small {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--steel-dim);
+      margin-top: 0.15rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--steel);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg) !important;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      padding: 0.55rem 1rem;
+      text-decoration: none;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+    .nav-cta:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      color: var(--bg) !important;
+    }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2.5rem;
+      align-items: center;
+      padding: 2rem 0 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .hero-kicker::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 4.5vw, 3.35rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.15rem;
+      background: linear-gradient(120deg, #ffffff 20%, var(--cyan) 55%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-lead {
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 34em;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .btn-primary {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--cyan);
+      padding: 0.8rem 1.4rem;
+      text-decoration: none;
+      border: none;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.4);
+      transition: background 0.15s, transform 0.15s;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      background: var(--cyan-hot);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: transparent;
+      padding: 0.8rem 1.4rem;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: inline-block;
+    }
+    .btn-ghost:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+    }
+
+    /* hero side panel */
+    .hero-panel {
+      position: relative;
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      padding: 1.5rem;
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+      box-shadow:
+        inset 0 0 40px rgba(0, 240, 255, 0.04),
+        0 0 40px rgba(22, 58, 107, 0.4);
+    }
+    .hero-panel::before {
+      content: "SYS // APP_BASE";
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      color: var(--cyan-dim, var(--cyan));
+      color: var(--steel-dim);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.08);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+    }
+    .status-row:last-child { border-bottom: none; }
+    .status-key { color: var(--steel-dim); }
+    .status-val { color: var(--cyan); }
+    .status-val.ok::before {
+      content: "● ";
+      color: #00ff9d;
+      font-size: 0.6rem;
+    }
+
+    .logo-hero-wrap {
+      width: fit-content;
+      max-width: 100%;
+      margin: 1.25rem auto 0.85rem;
+      padding: 1.1rem 1.25rem;
+      background: linear-gradient(160deg, #f4f8ff 0%, #dce9ff 45%, #c5dbff 100%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(22, 58, 107, 0.12),
+        0 0 28px rgba(0, 240, 255, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .logo-hero {
+      width: 140px;
+      height: 140px;
+      max-width: 100%;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 2px 8px rgba(22, 58, 107, 0.25));
+      opacity: 1;
+    }
+
+    /* SECTION LABEL */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-head h2 {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .section-head .badge {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--steel-dim);
+      border: 1px dashed rgba(122, 132, 140, 0.5);
+      padding: 0.3rem 0.55rem;
+      background: rgba(22, 58, 107, 0.25);
+    }
+
+    /* CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.15rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      padding: 1.4rem 1.35rem 1.5rem;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), transparent);
+      opacity: 0.5;
+    }
+    .card:hover {
+      border-color: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.12);
+      transform: translateY(-3px);
+    }
+
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.6rem;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+      color: var(--text);
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .card-link {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+    }
+    .card-link:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+
+    /* ABOUT STRIP */
+    .about {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(22, 58, 107, 0.35), rgba(10, 18, 32, 0.9));
+      border: 1px solid var(--line);
+      padding: 2rem 2.25rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    .about::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 0, 0, 0.06) 3px,
+        rgba(0, 0, 0, 0.06) 6px
+      );
+      opacity: 0.5;
+    }
+
+    .about-logo {
+      width: 88px;
+      height: 88px;
+      filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.3));
+      position: relative;
+      z-index: 1;
+    }
+
+    .about-body {
+      position: relative;
+      z-index: 1;
+    }
+    .about-body h2 {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.65rem;
+    }
+    .about-body p {
+      color: var(--steel);
+      font-size: 1rem;
+      max-width: 48em;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--steel-dim);
+    }
+    .footer-brand a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    .footer-cta { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .footer-cta a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: var(--navy-mid);
+      border: 1px solid var(--cyan);
+      padding: 0.6rem 1.15rem;
+      text-decoration: none;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+      transition: background 0.15s;
+    }
+    .footer-cta a:hover {
+      background: var(--navy);
+    }
+
+    /* OCTET download block (switch: data-octet-live on .octet-card) */
+    .octet-card:not([data-octet-live="true"]) .octet-live,
+    .octet-card[data-octet-live="true"] .octet-soon { display: none !important; }
+    .octet-meta,
+    .octet-count {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .octet-count[hidden] { display: none; }
+    .octet-count::before { content: "· "; }
+    .octet-sha {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.6;
+      word-break: break-all;
+      margin-bottom: 0.9rem;
+    }
+    .octet-sha code { color: var(--cyan); }
+
+    .octet-whatsnew {
+      font-size: 0.86rem;
+      color: var(--muted);
+      background: rgba(22, 58, 107, 0.22);
+      border-left: 2px solid var(--blue);
+      padding: 0.55rem 0.85rem;
+      margin: 0 0 1rem;
+      max-width: 52em;
+    }
+    .octet-whatsnew strong {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 600;
+      margin-right: 0.4rem;
+    }
+    .octet-whatsnew a {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+      white-space: nowrap;
+      margin-left: 0.35rem;
+    }
+    .octet-whatsnew a:hover { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+
+    .octet-demo { margin: 0 0 1.1rem; max-width: 720px; }
+    .octet-demo-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.45rem;
+    }
+    .octet-demo video {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 6px;
+      background: #0b1a2e;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.08);
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .btn-idea {
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 0.42rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .btn-idea:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
+    }
+    .btn-idea-glyph { font-size: 0.85rem; line-height: 1; letter-spacing: 0; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 2rem; }
+      .cards { grid-template-columns: 1fr; }
+      .about { grid-template-columns: 1fr; text-align: left; }
+      .nav-links li:not(:last-child) { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.85rem; }
+      .about { padding: 1.5rem; }
+    }
+    /* ===== Octet product page ===== */
+    .p-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 2.5rem; align-items: center; padding: 1rem 0 3rem; }
+    .p-hero h1 { font-size: clamp(2.4rem, 5.2vw, 3.9rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; margin-bottom: 1.15rem;
+      background: linear-gradient(120deg, #ffffff 20%, var(--cyan) 55%, var(--blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .p-hero h1 small { color: var(--text); -webkit-text-fill-color: var(--text); font-weight: 700; }
+    .p-hero h1 small { display: block; font-size: 0.42em; letter-spacing: 0; margin-top: 0.35rem; }
+    .p-hero-shot img { width: 100%; height: auto; display: block; border: 1px solid rgba(0, 240, 255, 0.25); box-shadow: 0 0 40px rgba(0, 240, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.5); }
+    .appstore-badge {
+      display: inline-flex; align-items: center; gap: 0.7rem; background: #000; color: #fff; text-decoration: none;
+      border: 1px solid #a6a6a6; border-radius: 10px; padding: 0.45rem 1.05rem 0.5rem 0.85rem; line-height: 1.1;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .appstore-badge:hover { box-shadow: 0 0 18px rgba(0, 240, 255, 0.3); transform: translateY(-1px); }
+    .appstore-badge svg { width: 26px; height: 26px; fill: #fff; flex: none; }
+    .appstore-badge span { display: block; font-size: 0.66rem; letter-spacing: 0.02em; }
+    .appstore-badge strong { display: block; font-size: 1.18rem; font-weight: 600; letter-spacing: -0.01em; }
+    .hero-actions { align-items: center; }
+    .hero-note { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--muted); margin-top: 0.9rem; }
+    .hero-note b { color: #ffd166; font-weight: 600; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+    .chip { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel); border: 1px solid var(--line); padding: 0.28rem 0.55rem; background: rgba(22, 58, 107, 0.25); }
+
+    .p-section { margin-bottom: 3.5rem; scroll-margin-top: 1.5rem; }
+    .p-intro { color: var(--muted); max-width: 46em; margin: -0.4rem 0 1.4rem; }
+
+    .demo { display: grid; grid-template-columns: 1.4fr 0.6fr; gap: 1.75rem; align-items: center; }
+    .demo video { display: block; width: 100%; height: auto; border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 6px; background: #0b1a2e; box-shadow: 0 0 24px rgba(0, 240, 255, 0.08); }
+    .demo ul { list-style: none; display: grid; gap: 0.7rem; }
+    .demo li { color: var(--muted); font-size: 0.95rem; padding-left: 1.2rem; position: relative; }
+    .demo li::before { content: "›"; position: absolute; left: 0.1rem; color: var(--cyan); font-family: var(--mono); }
+    .demo li strong { color: var(--text); }
+    .demo-label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.5rem; }
+    .lite-demo { margin-top: 2rem; }
+
+    /* comparison */
+    .compare-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--bg-card); }
+    table.compare { width: 100%; border-collapse: collapse; }
+    .compare th, .compare td { padding: 0.8rem 1rem; border-bottom: 1px solid rgba(0, 240, 255, 0.08); text-align: left; vertical-align: top; font-size: 0.92rem; }
+    .compare thead th { vertical-align: bottom; background: rgba(10, 18, 32, 0.9); border-bottom: 1px solid var(--line); }
+    .compare thead th.col-paid { background: linear-gradient(180deg, rgba(0, 240, 255, 0.14), rgba(22, 58, 107, 0.35)); }
+    .col-name { display: block; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .col-sub { display: block; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--steel-dim); margin-top: 0.2rem; }
+    .col-price { display: block; font-family: var(--mono); font-size: 0.85rem; color: var(--cyan); margin-top: 0.45rem; }
+    .compare td:first-child { color: var(--text); width: 46%; }
+    .compare td:first-child small { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }
+    .compare td.c { text-align: center; font-family: var(--mono); width: 27%; }
+    .compare th.c { text-align: center; width: 27%; }
+    .compare td.col-paid { background: rgba(0, 240, 255, 0.035); }
+    .yes { color: #00ff9d; font-size: 1.1rem; font-family: var(--sans); font-weight: 700; }
+    .no { color: var(--steel-dim); }
+    .part { color: var(--steel); font-size: 0.78rem; }
+    .compare tr.group td { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue); background: rgba(22, 58, 107, 0.2); padding: 0.5rem 1rem; }
+    .compare tfoot td { border-bottom: none; padding: 1rem; }
+    .compare-note { font-size: 0.8rem; color: var(--steel-dim); margin-top: 0.7rem; font-family: var(--mono); letter-spacing: 0.02em; }
+
+    /* features */
+    .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center; margin-bottom: 1.75rem; background: var(--bg-card); border: 1px solid var(--line); padding: 1.25rem; position: relative; }
+    .feat::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), transparent); opacity: 0.5; }
+    .feat:nth-child(even) .feat-img { order: 2; }
+    .feat img { width: 100%; height: auto; display: block; border: 1px solid rgba(0, 240, 255, 0.18); }
+    .feat h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feat p { color: var(--muted); font-size: 0.95rem; }
+    .feat .tag { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 0.5rem; }
+    .feat .tag em { font-style: normal; color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 0.05rem 0.4rem; margin-left: 0.4rem; }
+
+    /* steps */
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; counter-reset: s; margin-bottom: 1.25rem; }
+    .step { background: var(--bg-card); border: 1px solid var(--line); padding: 1.1rem 1.1rem 1.2rem; counter-increment: s; }
+    .step::before { content: "0" counter(s); font-family: var(--mono); color: var(--cyan); font-size: 0.8rem; letter-spacing: 0.12em; display: block; margin-bottom: 0.4rem; }
+    .step h3 { font-size: 1rem; margin-bottom: 0.3rem; }
+    .step p { color: var(--muted); font-size: 0.88rem; }
+    pre.cli { font-family: var(--mono); font-size: 0.82rem; line-height: 1.7; color: #cfe9ff; background: #050b16; border: 1px solid var(--line); border-left: 2px solid var(--cyan); padding: 1rem 1.2rem; overflow-x: auto; }
+    pre.cli .p { color: var(--cyan); }
+    pre.cli .c { color: var(--steel-dim); }
+
+    /* faq */
+    .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .faq details { background: var(--bg-card); border: 1px solid var(--line); padding: 1rem 1.15rem; }
+    .faq summary { cursor: pointer; font-weight: 600; color: var(--text); list-style: none; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::before { content: "› "; color: var(--cyan); font-family: var(--mono); }
+    .faq p { color: var(--muted); font-size: 0.92rem; margin-top: 0.55rem; }
+    .faq a, .p-intro a, .link-row a { color: var(--cyan); text-decoration: none; }
+    code { font-family: var(--mono); font-size: 0.88em; color: var(--cyan-hot); }
+
+    .link-row { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 1.4rem; }
+
+    .p-cta { text-align: center; background: linear-gradient(135deg, rgba(22, 58, 107, 0.45), rgba(10, 18, 32, 0.9)); border: 1px solid var(--line); padding: 2.5rem 1.5rem; margin-bottom: 3rem; }
+    .p-cta h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .p-cta p { color: var(--muted); margin-bottom: 1.4rem; }
+    .p-cta .hero-actions { justify-content: center; }
+
+    @media (max-width: 860px) {
+      .p-hero, .demo, .feat, .faq { grid-template-columns: 1fr; }
+      .feat:nth-child(even) .feat-img { order: 0; }
+      .steps { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .steps { grid-template-columns: 1fr; }
+      .about { padding: 1.5rem; }
+      .compare th, .compare td { padding: 0.6rem 0.45rem; font-size: 0.84rem; }
+      .compare td:first-child { width: 60%; padding-left: 0.75rem; }
+      .compare td.c, .compare th.c { width: 20%; }
+      .col-name { font-size: 0.9rem; }
+      .col-sub { font-size: 0.56rem; letter-spacing: 0.04em; }
+      .col-price { font-size: 0.72rem; }
+      .part { font-size: 0.66rem; }
+      .compare tfoot td:first-child { display: none; }
+      .compare tfoot .btn-ghost, .compare tfoot .btn-primary { padding: 0.6rem 0.5rem; font-size: 0.62rem; }
+    }
+    .compare-note code { word-break: break-all; color: var(--cyan); }
+  </style>
+  <style>
+    .guide-h1 { font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--text); margin: 0.6rem 0 1rem; line-height: 1.15; }
+    .guide-h3 { color: var(--text); font-size: 1.05rem; margin: 1.4rem 0 0.5rem; }
+    .guide-p { color: var(--muted); max-width: 72ch; margin: 0.6rem 0; line-height: 1.6; }
+    .guide-p a { color: var(--cyan); text-decoration: none; }
+    .guide-p code { font-family: var(--mono); color: var(--cyan); font-size: 0.9em; word-break: break-word; }
+    .guide-p strong { color: var(--text); }
+    pre.cli { overflow-x: auto; }
+  </style>
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="PWR Industries" />
+  <meta property="og:title" content="How to set up a TFTP server on Mac | PWR Industries" />
+  <meta property="og:description" content="How to set up a TFTP server on Mac: the built-in macOS tftpd with launchctl, step by step, or the easy way with Octet TFTP. Includes Cisco IOS copy commands." />
+  <meta property="og:url" content="https://www.pwr.industries/mac-tftp-server.html" />
+  <meta property="og:image" content="https://www.pwr.industries/img/octet-og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@PWRIndustries" />
+  <meta name="twitter:title" content="How to set up a TFTP server on Mac | PWR Industries" />
+  <meta name="twitter:description" content="How to set up a TFTP server on Mac: the built-in macOS tftpd with launchctl, step by step, or the easy way with Octet TFTP. Includes Cisco IOS copy commands." />
+  <meta name="twitter:image" content="https://www.pwr.industries/img/octet-og.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to set up a TFTP server on Mac",
+  "description": "How to set up a TFTP server on Mac: the built-in macOS tftpd with launchctl, step by step, or the easy way with Octet TFTP. Includes Cisco IOS copy commands.",
+  "url": "https://www.pwr.industries/mac-tftp-server.html",
+  "tool": [
+    {
+      "@type": "HowToTool",
+      "name": "Terminal (macOS)"
+    }
+  ],
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Load the built-in tftpd",
+      "text": "sudo launchctl load -F /System/Library/LaunchDaemons/tftp.plist"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Put files in /private/tftpboot",
+      "text": "Copy firmware and configs into /private/tftpboot, the default folder tftpd serves."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Allow uploads",
+      "text": "sudo chmod 777 /private/tftpboot, then create each upload target first with sudo touch and sudo chmod 666, because tftpd only overwrites existing files."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Check it is listening",
+      "text": "sudo lsof -i :69"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 5,
+      "name": "Stop it when done",
+      "text": "sudo launchctl unload -F /System/Library/LaunchDaemons/tftp.plist"
+    }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "PWR Industries LLC",
+    "url": "https://www.pwr.industries/"
+  },
+  "dateModified": "2026-10-14"
+}
+  </script>
+</head>
+<body>
+  <div class="bg-fx" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="index.html">
+        <span class="nav-brand-mark" aria-hidden="false"><img src="logo.svg" alt="PWR Industries" width="40" height="40" /></span>
+        <div class="nav-brand-text">
+          PWR Industries
+          <small>pwr.industries</small>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#apps">Apps</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a class="nav-cta" href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section class="p-section" aria-labelledby="guide-title">
+      <div class="hero-kicker">PWR Industries · Guide</div>
+      <h1 id="guide-title" class="guide-h1">How to set up a TFTP server on Mac</h1>
+      <p class="guide-p">Need to push firmware to a switch or back up a router config? Your Mac can be the TFTP server. There are two ways: the TFTP daemon that ships with macOS, set up from Terminal, or <a href="octet.html">Octet</a>, a TFTP server for Mac with a window, a log and a Start button.</p>
+    </section>
+
+    <section class="p-section" id="builtin" aria-labelledby="builtin-title">
+      <div class="section-head">
+        <h2 id="builtin-title">// 1 · The hard way: macOS built-in tftpd</h2>
+        <span class="badge">Terminal</span>
+      </div>
+      <p class="guide-p">macOS includes <code>tftpd</code>, but it is off by default and has no settings window. Every command below runs in Terminal and needs your admin password.</p>
+      <h3 class="guide-h3">Step 1. Start the server</h3>
+<pre class="cli"><span class="c"># Load the built-in TFTP daemon (it listens on UDP port 69)</span>
+<span class="p">$</span> sudo launchctl load -F /System/Library/LaunchDaemons/tftp.plist</pre>
+      <h3 class="guide-h3">Step 2. Add your files</h3>
+      <p class="guide-p">tftpd serves the folder <code>/private/tftpboot</code>. Devices can only download files that are in it and readable.</p>
+<pre class="cli"><span class="c"># Copy a firmware image into the TFTP folder</span>
+<span class="p">$</span> sudo cp ~/Downloads/c9300-17.15.06.bin /private/tftpboot/
+<span class="p">$</span> sudo chmod 644 /private/tftpboot/c9300-17.15.06.bin</pre>
+      <h3 class="guide-h3">Step 3. Allow uploads (optional)</h3>
+      <p class="guide-p">By default tftpd won&rsquo;t create new files, so an upload such as a config backup fails unless the file already exists and is writable. Open up the folder, then create each target file before the device sends it.</p>
+<pre class="cli"><span class="p">$</span> sudo chmod 777 /private/tftpboot
+<span class="p">$</span> sudo touch /private/tftpboot/lab-sw1-config.txt
+<span class="p">$</span> sudo chmod 666 /private/tftpboot/lab-sw1-config.txt</pre>
+      <p class="guide-p">A world-writable folder lets anyone on the network overwrite those files, so only do this on a trusted lab network and tighten it again afterwards.</p>
+      <h3 class="guide-h3">Step 4. Check that it&rsquo;s listening</h3>
+<pre class="cli"><span class="p">$</span> sudo lsof -i :69
+<span class="c"># Look for a launchd or tftpd line with UDP *:tftp. No output means it isn't running.</span></pre>
+      <h3 class="guide-h3">Step 5. Stop it when you&rsquo;re done</h3>
+<pre class="cli"><span class="p">$</span> sudo launchctl unload -F /System/Library/LaunchDaemons/tftp.plist</pre>
+      <p class="guide-p"><strong>Firewall note:</strong> if the macOS firewall is on (System Settings → Network → Firewall), it may block incoming connections, and devices will time out. Also find your Mac&rsquo;s IP address yourself, in System Settings → Network or with <code>ipconfig getifaddr en0</code> (<code>en0</code> is usually Wi-Fi or built-in Ethernet). There is no transfer log to watch, so when a copy fails you have to guess why.</p>
+    </section>
+
+    <section class="p-section" id="octet" aria-labelledby="octet-way-title">
+      <div class="section-head">
+        <h2 id="octet-way-title">// 2 · The easy way: Octet</h2>
+        <span class="badge">Under a minute</span>
+      </div>
+      <p class="guide-p"><a href="octet.html">Octet</a> is a TFTP server for Mac that skips Terminal. It runs on Apple silicon Macs with macOS 14 or later.</p>
+      <div class="steps">
+        <div class="step"><h3>Pick a folder</h3><p>Click Choose&hellip; and select any folder with your images and configs. No /private/tftpboot, no chmod.</p></div>
+        <div class="step"><h3>Click Start</h3><p>Octet listens on UDP port 69 and turns GET and PUT on or off with a switch.</p></div>
+        <div class="step"><h3>Read the IP</h3><p>Octet shows your Mac&rsquo;s LAN IP, ready to type into the device.</p></div>
+        <div class="step"><h3>Watch the log</h3><p>Every transfer and error is logged, so a failed copy tells you why.</p></div>
+      </div>
+      <p class="guide-p"><strong>Octet TFTP Lite</strong> (1.0.2) is the free, basic version. <a href="https://github.com/pwrindustries/www/releases/download/octet-v1.0.2/Octet-1.0.2.dmg">Download Octet TFTP Lite</a>. <strong>Octet TFTP</strong>, with faster transfers, progress bars, safe uploads, allowed devices and menu bar mode, is coming soon to the Mac App Store for $4.99 and is in review with Apple now. <a href="octet.html#compare">Compare Lite and Octet TFTP →</a></p>
+    </section>
+
+    <section class="p-section" id="cisco" aria-labelledby="cisco-title">
+      <div class="section-head">
+        <h2 id="cisco-title">// Copy files from a Cisco device</h2>
+        <span class="badge">IOS / IOS-XE</span>
+      </div>
+      <p class="guide-p">Either way, the device side is the same. In these examples the Mac is at 192.168.1.50.</p>
+<pre class="cli"><span class="c">! Download a firmware image from the Mac to flash (interactive prompts)</span>
+<span class="p">lab-sw1#</span> copy tftp: flash:
+Address or name of remote host []? 192.168.1.50
+Source filename []? c9300-17.15.06.bin
+<span class="c">! Back up the running config to the Mac</span>
+<span class="p">lab-sw1#</span> copy running-config tftp:
+Address or name of remote host []? 192.168.1.50
+Destination filename [lab-sw1-confg]? lab-sw1-config.txt
+<span class="c">! Using a management port or VRF? Set the source interface first:</span>
+<span class="p">lab-sw1(config)#</span> ip tftp source-interface GigabitEthernet0/0</pre>
+      <p class="guide-p">Device can ping the Mac but the copy times out? Something between them is blocking TFTP. See <a href="support.html#firewall">firewall and routing tips</a>.</p>
+    </section>
+
+    <section class="p-cta" aria-label="Get Octet">
+      <h2>Skip the Terminal</h2>
+      <p>Octet TFTP Lite is a free download for Apple silicon Macs. Octet TFTP is coming soon to the Mac App Store.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="https://github.com/pwrindustries/www/releases/download/octet-v1.0.2/Octet-1.0.2.dmg">Get Octet TFTP Lite free</a>
+        <a class="btn-ghost" href="octet.html">Explore Octet</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-brand">
+        PWR Industries · <a href="https://www.pwr.industries">www.pwr.industries</a> · <a href="octet.html">Octet</a> · <a href="mac-tftp-server.html">Mac TFTP guide</a> · <a href="support.html">Support</a> · <a href="privacy.html">Privacy</a> · <a href="releases.html">Octet release notes</a>
+      </div>
+      <div class="footer-cta">
+        <a href="https://x.com/PWRIndustries" target="_blank" rel="noopener" aria-label="PWR Industries on X">Follow @PWRIndustries on X</a>
+        <a href="https://ko-fi.com/pwrindustries" target="_blank" rel="noopener">Support on Ko-fi</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </footer>
+  </div>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "fc42c8ee621c4cedb68a0e7087149c45"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
