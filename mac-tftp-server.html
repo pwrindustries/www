@@ -717,6 +717,14 @@
       .compare tfoot .btn-ghost, .compare tfoot .btn-primary { padding: 0.6rem 0.5rem; font-size: 0.62rem; }
     }
     .compare-note code { word-break: break-all; color: var(--cyan); }
+
+    /* NAV: Report a bug link */
+    .nav-bug{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+    .nav-bug .bug-ic{flex:none}
+    .nav-bug[aria-current="page"]{color:var(--cyan)}
+    @media (max-width:860px){.nav-links li.keep{display:list-item}.nav-links{gap:.6rem}}
+    @media (max-width:480px){.nav-brand-text small{display:none}.nav-brand-mark{width:40px;height:40px;padding:4px}.nav-brand img{width:32px;height:32px}.nav-brand{gap:.5rem}.nav-brand-text{font-size:.72rem;letter-spacing:.08em}.nav-cta{padding-left:.6rem!important;padding-right:.6rem!important;letter-spacing:.06em!important}.nav-bug .full{display:none}}
+    @media (min-width:481px){.nav-bug .short{display:none}}
   </style>
   <style>
     .guide-h1 { font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--text); margin: 0.6rem 0 1rem; line-height: 1.15; }
@@ -806,7 +814,8 @@
       <ul class="nav-links">
         <li><a href="index.html#apps">Apps</a></li>
         <li><a href="about.html">About</a></li>
-        <li><a class="nav-cta" href="contact.html">Contact</a></li>
+        <li class="keep"><a class="nav-cta" href="contact.html">Contact</a></li>
+        <li><a class="nav-bug" href="/bugs"><svg class="bug-ic" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M5 3a3 3 0 0 1 6 0v.3A3 3 0 0 1 12 6v.5h2v1.2h-2V9h2v1.2h-2.1A4 4 0 0 1 8 14a4 4 0 0 1-3.9-3.8H2V9h2V7.7H2V6.5h2V6a3 3 0 0 1 1-2.7zM6.3 3.5h3.4a1.7 1.7 0 0 0-3.4 0zM7.4 6v6.6h1.2V6z"/></svg><span class="full">Report a bug</span><span class="short">Report bug</span></a></li>
       </ul>
     </nav>
 
