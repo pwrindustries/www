@@ -407,9 +407,13 @@
     /* NAV: Report a bug link */
     .nav-bug{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
     .nav-bug .bug-ic{flex:none}
-    .nav-bug[aria-current="page"]{color:var(--cyan)}
+    .nav-links a.nav-bug{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#FFB84D;border:1px solid #FFB84D;background:transparent;padding:calc(.55rem - 1px) 1rem;line-height:inherit;transition:background .15s ease,box-shadow .15s ease}
+    .nav-links a.nav-bug:hover{color:#FFB84D;background:rgba(255,184,77,.12);box-shadow:0 0 14px rgba(255,184,77,.25)}
+    .nav-links a.nav-bug:focus-visible{outline:2px solid #FFB84D;outline-offset:3px}
+    .nav-links a.nav-bug[aria-current="page"]{color:#FFB84D;background:rgba(255,184,77,.18)}
+    .nav-links a.nav-cta:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
     @media (max-width:860px){.nav-links li.keep{display:list-item}.nav-links{gap:.6rem}}
-    @media (max-width:480px){.nav-brand-text small{display:none}.nav-brand-mark{width:40px;height:40px;padding:4px}.nav-brand img{width:32px;height:32px}.nav-brand{gap:.5rem}.nav-brand-text{font-size:.72rem;letter-spacing:.08em}.nav-cta{padding-left:.6rem!important;padding-right:.6rem!important;letter-spacing:.06em!important}.nav-bug .full{display:none}}
+    @media (max-width:480px){.nav-brand-text small{display:none}.nav-brand-mark{width:40px;height:40px;padding:4px}.nav-brand img{width:32px;height:32px}.nav-brand{gap:.5rem}.nav-brand-text{font-size:.72rem;letter-spacing:.08em}.nav-cta,.nav-links a.nav-bug{padding-left:.6rem!important;padding-right:.6rem!important;letter-spacing:.06em!important}.nav-bug .full{display:none}}
     @media (min-width:481px){.nav-bug .short{display:none}}
   </style>
   <meta property="og:type" content="website" />
