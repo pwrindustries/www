@@ -474,6 +474,8 @@ background-image:linear-gradient(45deg,transparent 50%,var(--cyan) 50%),linear-g
 <option>Apple silicon (M1)</option><option>Apple silicon (M2)</option><option>Apple silicon (M3)</option><option>Apple silicon (M4)</option><option>Apple silicon (other / not sure)</option></select><p class="hint">Octet TFTP Lite runs on Apple silicon Macs.</p></div></div></div><div class="step"><div class="step-head"><span class="step-num">2</span>What happened</div><div class="field"><label for="bf-sum">Summary</label><input id="bf-sum" name="summary" required maxlength="140" placeholder="One line: what went wrong?"/></div><div class="field"><label for="bf-steps">Steps to reproduce</label><textarea id="bf-steps" class="short" name="steps" required maxlength="4000" placeholder="1. Open Octet
 2. Set root folder to …
 3. Start server and copy from switch …"></textarea></div></div><div class="step"><div class="step-head"><span class="step-num">3</span>Expected vs actual</div><div class="field-row"><div class="field"><label for="bf-exp">Expected result</label><textarea id="bf-exp" class="short" name="expected" required maxlength="2000" placeholder="What should have happened?"></textarea></div><div class="field"><label for="bf-act">Actual result</label><textarea id="bf-act" class="short" name="actual" required maxlength="2000" placeholder="What happened instead? Include any error text."></textarea></div></div></div><div class="step"><div class="step-head"><span class="step-num">4</span>Extras &amp; contact</div><div class="warn"><b>Never include passwords</b>Don’t paste passwords, enable secrets, SNMP communities, keys or full device configs. We will never ask for them.</div><div class="field"><label for="bf-att">Logs / screenshots <span class="opt">(optional)</span></label><textarea id="bf-att" class="short" name="attachment_note" maxlength="2000" placeholder="Paste log lines, or tell us you have a screenshot and we’ll ask for it by email."></textarea><p class="hint">No file upload here. Remove usernames, IPs and configs you don’t want to share.</p></div><div class="field"><label for="bf-email">Email <span class="opt">(optional)</span></label><input type="email" id="bf-email" name="email" maxlength="200" placeholder="you@example.com"/><p class="hint">Only used if we need more detail or to tell you it’s fixed.</p></div></div><div class="h-captcha" data-captcha="true" data-theme="dark"></div>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAAFZfapEAtSuMk-EP" data-theme="dark" data-appearance="interaction-only"></div>
+<input type="hidden" name="tracker_issue" id="bf-issue" value=""/>
 <div class="form-actions"><button type="submit" class="btn-primary" id="bf-submit">Send bug report</button><span class="form-status" id="bf-status" role="status" aria-live="polite"></span><a class="btn-ghost" href="/support.html">Support &amp; FAQ</a></div>
 <p class="form-note">Reports go to PWR Industries and are tracked until fixed. Your email is never published.</p></form><footer>
       <div class="footer-brand">
@@ -485,6 +487,7 @@ background-image:linear-gradient(45deg,transparent 50%,var(--cyan) 50%),linear-g
       </div>
     </footer></div>
 <script src="https://web3forms.com/client/script.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
   (function () {
     var form = document.getElementById("bug-form");
@@ -505,15 +508,26 @@ background-image:linear-gradient(45deg,transparent 50%,var(--cyan) 50%),linear-g
       var captcha = form.querySelector('textarea[name="h-captcha-response"]');
       if (!captcha || !captcha.value) { say("Please complete the captcha.", "err"); return; }
       syncSubject();
-      var data = new FormData(form);
+      var WORKER = "https://pwr-bugs.pwr-0bd.workers.dev/";
       btn.disabled = true;
       say("Sending…");
-      fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Accept": "application/json" }, body: data })
+      // 1) Tracker issue via Worker (email is stripped there). Failure never blocks the email copy.
+      fetch(WORKER, { method: "POST", body: new FormData(form) })
+        .then(function (r) { return r.json(); })
+        .catch(function () { return { ok: false }; })
+        .then(function (t) {
+          document.getElementById("bf-issue").value = (t && t.url) ? t.url : "not filed (" + ((t && t.error) || "network") + ")";
+          var data = new FormData(form);
+          data.delete("cf-turnstile-response");
+          // 2) Inbox copy via Web3Forms, as today (includes tracker_issue link)
+          return fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Accept": "application/json" }, body: data });
+        })
         .then(function (r) { return r.json().catch(function () { return { success: false }; }); })
         .then(function (res) {
           if (res && res.success) {
             form.reset(); syncSubject();
             if (window.hcaptcha && hcaptcha.reset) { try { hcaptcha.reset(); } catch (e) {} }
+            if (window.turnstile) { try { turnstile.reset(); } catch (e) {} }
             say("Thanks! Your bug report is on its way.", "ok");
           } else {
             say((res && res.message) ? "Couldn't send: " + res.message : "Couldn't send right now. Please try again in a minute.", "err");
